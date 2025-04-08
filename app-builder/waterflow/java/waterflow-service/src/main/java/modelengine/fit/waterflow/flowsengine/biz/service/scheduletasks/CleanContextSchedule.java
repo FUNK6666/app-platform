@@ -11,6 +11,7 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowconte
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowtrace.FlowTraceRepo;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.schedule.annotation.Scheduled;
 import modelengine.fitframework.transaction.Transactional;
@@ -27,30 +28,31 @@ import java.util.List;
 @Component
 public class CleanContextSchedule {
     private static final Logger log = Logger.get(CleanContextSchedule.class);
-    private static final int EXPIRED_DAYS = 30;
     private static final int LIMIT = 1000;
     private final FlowTraceRepo flowTraceRepo;
     private final FlowContextRepo flowContextRepo;
+    private final int expiredDays;
 
     public CleanContextSchedule(FlowTraceRepo flowTraceRepo, @Fit(alias = "flowContextPersistRepo") FlowContextRepo
-            flowContextRepo) {
+            flowContextRepo, @Value("${jane.flowsEngine.contextExpiredDays}") int expiredDays) {
         this.flowTraceRepo = flowTraceRepo;
         this.flowContextRepo = flowContextRepo;
+        this.expiredDays = expiredDays;
     }
 
     /**
-     * 每天凌晨3点定时清理超期30天的流程运行数据
+     * 每天凌晨3点定时清理超期EXPIRED_DAYS天的流程运行数据
      */
-    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "* * 3 * * ?")
+    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
     @Transactional
     public void cleanContextSchedule() {
         log.info("Start clean flow expired contexts");
         try {
-            List<String> traceIds = flowTraceRepo.getExpiredTrace(EXPIRED_DAYS, LIMIT);
+            List<String> traceIds = flowTraceRepo.getExpiredTrace(expiredDays, LIMIT);
             while (!traceIds.isEmpty()) {
                 flowContextRepo.deleteByTraceIdList(traceIds);
                 flowTraceRepo.deleteByIdList(traceIds);
-                traceIds = flowTraceRepo.getExpiredTrace(EXPIRED_DAYS, LIMIT);
+                traceIds = flowTraceRepo.getExpiredTrace(expiredDays, LIMIT);
                 SleepUtil.sleep(60000);
             }
         } catch (Exception ex) {
