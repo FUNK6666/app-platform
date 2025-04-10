@@ -9,6 +9,7 @@ package modelengine.fit.task_new.repository;
 import modelengine.fit.task_new.condition.MetaInstanceCondition;
 import modelengine.fit.task_new.entity.MetaInstance;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -54,4 +55,20 @@ public interface MetaInstanceRepository {
      * @return 表示查询后的结果的 {@code long}
      */
     long count(MetaInstanceCondition condition);
+
+    /**
+     * 获取超期的meta实例id列表
+     *
+     * @param expiredDays 表示超期时间的 {@link LocalDateTime}
+     * @param limit 表示查询条数的 {@link int}
+     * @return 表示meta实例的id列表的 {@link List}{@code <}{@link String}{@code >}
+     */
+    List<String> getExpiredInstanceIds(int expiredDays, int limit);
+
+    /**
+     * 根据meta实例id列表强制删除会话记录
+     *
+     * @param ids 表示meta实例id列表的 {@link List}{@code <}{@link String}{@code >}
+     */
+    void forceDelete(List<String> ids);
 }
