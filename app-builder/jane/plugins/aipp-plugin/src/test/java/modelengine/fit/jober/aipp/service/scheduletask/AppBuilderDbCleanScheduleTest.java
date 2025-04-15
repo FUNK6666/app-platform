@@ -44,13 +44,13 @@ class AppBuilderDbCleanScheduleTest {
     void setUp() {
         instanceLogRepository = Mockito.mock(AippInstanceLogRepository.class);
         runtimeInfoRepository = Mockito.mock(AppBuilderRuntimeInfoRepository.class);
-        dbCleanSchedule = new AppBuilderDbCleanSchedule(1, instanceLogRepository, runtimeInfoRepository);
+        dbCleanSchedule = new AppBuilderDbCleanSchedule(1, 1, instanceLogRepository, runtimeInfoRepository, null);
     }
 
     @Test
     void testAppBuilderDbCleanScheduleSuccess() {
         List<Long> ids = Arrays.asList(1L, 2L, 3L);
-        when(instanceLogRepository.getExpirePreviewInstanceLogs(anyInt(), anyInt()))
+        when(instanceLogRepository.getExpireInstanceLogIds(anyInt(), anyInt()))
                 .thenReturn(ids)
                 .thenReturn(Collections.emptyList());
         when(runtimeInfoRepository.getExpiredRuntimeInfos(anyInt(), anyInt()))
@@ -59,7 +59,7 @@ class AppBuilderDbCleanScheduleTest {
 
         dbCleanSchedule.appBuilderDbCleanSchedule();
 
-        verify(instanceLogRepository, times(2)).getExpirePreviewInstanceLogs(anyInt(), anyInt());
+        verify(instanceLogRepository, times(2)).getExpireInstanceLogIds(anyInt(), anyInt());
         verify(instanceLogRepository, times(1)).forceDeleteInstanceLogs(anyList());
         verify(runtimeInfoRepository, times(2)).getExpiredRuntimeInfos(anyInt(), anyInt());
         verify(runtimeInfoRepository, times(1)).deleteRuntimeInfos(anyList());

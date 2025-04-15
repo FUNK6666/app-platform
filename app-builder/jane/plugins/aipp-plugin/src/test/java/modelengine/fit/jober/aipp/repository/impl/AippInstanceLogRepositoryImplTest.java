@@ -53,7 +53,7 @@ public class AippInstanceLogRepositoryImplTest extends DatabaseBaseTest {
 
         repo.forceDeleteInstanceLogs(Collections.singletonList(1L));
 
-        List<Long> expirePreviewInstanceLogs = repo.getExpirePreviewInstanceLogs(0, 1);
+        List<Long> expirePreviewInstanceLogs = repo.getExpireInstanceLogIds(0, 1);
 
         Assertions.assertEquals(0, expirePreviewInstanceLogs.size());
     }
@@ -71,7 +71,7 @@ public class AippInstanceLogRepositoryImplTest extends DatabaseBaseTest {
                 .build();
         mapper.insertOne(dto);
 
-        List<Long> expirePreviewInstanceLogs = repo.getExpirePreviewInstanceLogs(0, 1);
+        List<Long> expirePreviewInstanceLogs = repo.getExpireInstanceLogIds(0, 1);
 
         Assertions.assertEquals(1, expirePreviewInstanceLogs.size());
     }

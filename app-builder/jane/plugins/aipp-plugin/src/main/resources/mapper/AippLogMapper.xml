@@ -264,13 +264,13 @@
         </foreach>
     </update>
 
-    <select id="getExpirePreviewInstanceLogs" resultType="long">
+    <select id="getExpireInstanceLogIds" resultType="long">
         SELECT
         log_id
         FROM
         aipp_instance_log
         WHERE
-        aipp_type = 'PREVIEW'
+        aipp_type = #{aippType}
         AND
         create_at &lt; #{expiredDays}
         LIMIT #{limit};
