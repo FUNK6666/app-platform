@@ -209,9 +209,9 @@ public interface AippLogMapper {
     /**
      * 根据实例id列表强制删除会话记录。
      *
-     * @param instanceIds 表示会话实例id列表的 {@link List}{@code <}{@link Long}{@code >}。
+     * @param logIds 表示会话实例id列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    void forceDeleteInstanceLogsByIds(List<Long> instanceIds);
+    void forceDeleteInstanceLogsByIds(List<Long> logIds);
 
     List<AippInstLog> selectByLogIds(@Param("logIds") List<Long> logIds);
 }
